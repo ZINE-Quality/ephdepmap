@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="192"
+   height="192"
+   viewBox="0 0 50.8 50.8"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.4.3 (0d15f75042, 2025-12-25)"
+   sodipodi:docname="logo.svg"
+   inkscape:export-filename="logo.png"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="in"
+     showguides="true"
+     inkscape:zoom="2.8614198"
+     inkscape:cx="50.14993"
+     inkscape:cy="130.18013"
+     inkscape:window-width="1853"
+     inkscape:window-height="1011"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer2">
+    <sodipodi:guide
+       position="34.027395,264.45205"
+       orientation="1,0"
+       id="guide2"
+       inkscape:locked="false" />
+  </sodipodi:namedview>
+  <defs
+     id="defs1">
+    <filter
+       inkscape:label="Ripple"
+       inkscape:menu="Distort"
+       inkscape:menu-tooltip="Horizontal rippling of edges"
+       style="color-interpolation-filters:sRGB"
+       id="filter2"
+       x="0"
+       y="0"
+       width="1"
+       height="1">
+      <feTurbulence
+         numOctaves="1"
+         baseFrequency="0.002 0.107"
+         id="feTurbulence2" />
+      <feColorMatrix
+         values="2 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.5 0.5"
+         result="result91"
+         id="feColorMatrix2" />
+      <feDisplacementMap
+         yChannelSelector="A"
+         xChannelSelector="R"
+         scale="14.3"
+         in="SourceGraphic"
+         in2="result91"
+         id="feDisplacementMap2" />
+    </filter>
+  </defs>
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="Final">
+    <rect
+       style="fill:#000000;stroke-width:0.292477"
+       id="rect6"
+       width="36.708904"
+       height="47.619865"
+       x="6.6575336"
+       y="1.7568492"
+       ry="16.374901" />
+    <rect
+       style="fill:#000000;stroke-width:0.101557"
+       id="rect6-6"
+       width="27.462328"
+       height="7.6746597"
+       x="10.875285"
+       y="11.261444"
+       ry="2.6390624" />
+    <rect
+       style="fill:#000000;stroke-width:0.101557"
+       id="rect11"
+       width="27.462328"
+       height="7.6746597"
+       x="10.875285"
+       y="11.261444"
+       ry="2.6390624" />
+    <rect
+       style="fill:#000000;stroke-width:0.101557"
+       id="rect12"
+       width="27.462328"
+       height="7.6746597"
+       x="10.875285"
+       y="11.261444"
+       ry="2.6390624" />
+    <rect
+       style="fill:#000000;stroke-width:0.101557"
+       id="rect13"
+       width="27.462328"
+       height="7.6746597"
+       x="10.875285"
+       y="11.261444"
+       ry="2.6390624" />
+    <rect
+       style="fill:#000000;stroke-width:0.101557"
+       id="rect14"
+       width="27.462328"
+       height="7.6746597"
+       x="10.875285"
+       y="11.261444"
+       ry="2.6390624" />
+    <rect
+       style="fill:#ffffff;fill-opacity:1;stroke-width:0.101557"
+       id="use14"
+       width="27.462328"
+       height="7.6746597"
+       x="11.404451"
+       y="9.1447792"
+       ry="2.6390624" />
+    <rect
+       style="fill:#ffffff;fill-opacity:1;stroke-width:0.101557"
+       id="use14-2"
+       width="27.462328"
+       height="7.6746597"
+       x="11.112502"
+       y="21.510902"
+       ry="2.6390624" />
+    <rect
+       style="fill:#ffffff;fill-opacity:1;stroke-width:0.101557"
+       id="use14-2-5"
+       width="27.462328"
+       height="7.6746597"
+       x="11.112502"
+       y="33.86668"
+       ry="2.6390624" />
+    <path
+       style="fill:#ffffff;fill-opacity:1;stroke-width:0.251771"
+       d="m 11.475328,14.888629 4.177723,8.597672 3.09793,2.866438 -7.242459,8.691781 h 9.000743 l 6.028407,-9.061644 -9.544976,-11.928082 z"
+       id="path15"
+       sodipodi:nodetypes="cccccccc" />
+  </g>
+</svg>

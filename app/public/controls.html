@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DEPMAP — Controls</title>
+<link rel="icon" type="image/svg+xml" href="logo.svg">
+<script>
+  // Same theme the main app is on, read from the same localStorage key -
+  // this page is opened standalone (new tab), not part of the app shell.
+  document.documentElement.dataset.theme = localStorage.getItem('depmap-theme') || 'tangerine-dark';
+</script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body class="controls-page">
+<div class="crt"></div>
+
+<div class="pane">
+  <div class="pane-head"><span class="title">DEPMAP CONTROLS</span></div>
+  <div class="pane-body">
+    <table class="ctrl-table">
+      <tr><th colspan="2">canvas</th></tr>
+      <tr><td>drag background</td><td>pan</td></tr>
+      <tr><td>wheel</td><td>zoom (cursor-anchored)</td></tr>
+      <tr><td>click node</td><td>select it &amp; set dependency "from"</td></tr>
+      <tr><td>alt+click node</td><td>queue it as a dependency target (chip in the right pane); alt+click again to remove it; without changing selection</td></tr>
+      <tr><td>"add N dependencies"</td><td>with targets queued, one click wires the current "from" node to every queued target at once, all sharing the current label/color</td></tr>
+      <tr><td>shift+drag node</td><td>move it; pins &amp; saves position on release</td></tr>
+      <tr><td>ctrl+shift+click node</td><td>add/remove it from a multi-select group</td></tr>
+      <tr><td>ctrl+shift+drag a selected node</td><td>move the whole multi-select group together</td></tr>
+      <tr><td>ctrl+alt+drag background</td><td>box-select — any node the box touches joins the multi-select group</td></tr>
+      <tr><td>click empty background</td><td>clear selection (single &amp; multi-select)</td></tr>
+      <tr><td>click a dependency line</td><td>select it for editing</td></tr>
+      <tr><td>drag a control-point handle</td><td>reshape the selected dependency's curve; saves on release</td></tr>
+      <tr><td>drag an anchor handle (dashed ring)</td><td>slide where the line/arrowhead touches that node's box, around its perimeter; saves on release</td></tr>
+
+      <tr><th colspan="2">right pane</th></tr>
+      <tr><td>new (node/dependency)</td><td>clear the form to add a fresh one</td></tr>
+      <tr><td>import csv</td><td>bulk-add nodes (name, kind, color, notes columns)</td></tr>
+      <tr><td>bidirectional checkbox</td><td>arrowhead on both ends of the dependency</td></tr>
+
+      <tr><th colspan="2">export / import</th></tr>
+      <tr><td>export dropdown - svg / pdf</td><td>current viewport as a standalone SVG, or the browser print dialog</td></tr>
+      <tr><td>export dropdown - png</td><td>current viewport rasterized to a print-ready 600 DPI, 17x11in (landscape) PNG</td></tr>
+      <tr><td>export dropdown - csv</td><td>node names + dependencies, reporting format only</td></tr>
+      <tr><td>project dropdown</td><td>export/import — full round trip, position/pin state/dependencies included; delete all wipes every node &amp; dependency (confirmation prompt)</td></tr>
+
+      <tr><th colspan="2">annotate</th></tr>
+      <tr><td>draw annotations dropdown</td><td>pick Group Label, Text Box, Draw Circle, Draw Arrow, Database, or Server, arms the tool (crosshair cursor) - drag a rectangle (oval for Draw Circle, line for Draw Arrow) on the canvas, then set its color (and note, for the first two)</td></tr>
+      <tr><td>group label</td><td>note is drawn above the box</td></tr>
+      <tr><td>text box</td><td>note is centered inside the box and clipped to it - only visible within the drawn outline</td></tr>
+      <tr><td>draw circle</td><td>an oval outline with no note - color only</td></tr>
+      <tr><td>draw arrow</td><td>a line from the drag's top-left to bottom-right with an arrowhead, no note - color only</td></tr>
+      <tr><td>database / server</td><td>fixed icon inscribed in the box, colored to match, no note and no outline - click anywhere in the box to edit</td></tr>
+      <tr><td>click an annotation's outline or note text</td><td>edit its color (and note, if it has one) - the dialog's own delete button removes it (confirmation prompt)</td></tr>
+
+      <tr><th colspan="2">misc</th></tr>
+      <tr><td>theme dropdown</td><td>pick from retro CRT, forest, light, plotter, tangerine light, tangerine dark</td></tr>
+      <tr><td>hide colors dropdown</td><td>check a swatch to hide every node, annotation, and dependency using that exact color - stays open across multiple checks, click elsewhere to close</td></tr>
+    </table>
+  </div>
+</div>
+
+</body>
+</html>

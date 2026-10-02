@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EPHDEPMAP</title>
+<link rel="icon" type="image/svg+xml" href="logo.svg">
+<script>
+  // Set before the stylesheet paints anything, so there's no flash of the
+  // wrong theme on load - data-theme drives the :root[data-theme=...]
+  // variable overrides in style.css.
+  document.documentElement.dataset.theme = localStorage.getItem('depmap-theme') || 'tangerine-dark';
+  // Same reasoning, same flash-of-wrong-appearance fix, for node corner style.
+  document.documentElement.dataset.nodeStyle = localStorage.getItem('depmap-node-style') || 'square';
+</script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="crt"></div>
+
+<div class="shell">
+
+  <section class="pane view" id="viewPane">
+    <div class="pane-head">
+      <img class="brand-mark" src="logo.svg" width="16" height="16" alt="">
+      <span class="title">EPHDEPMAP - Ephemeral Dependency Mapper</span>
+      <button class="ghost" id="btnControls" title="Open the controls reference in a new tab">controls</button>
+      <select class="ghost" id="themeSelect" title="Switch theme">
+        <option value="__theme__" selected disabled hidden>theme</option>
+      </select>
+      <select class="ghost" id="nodeStyleSelect" title="Square or rounded node corners - applies to every node">
+        <option value="__nodestyle__" selected disabled hidden>node style</option>
+        <option value="square">square</option>
+        <option value="rounded">rounded</option>
+      </select>
+      <select class="ghost" id="projectSelect" title="Export the whole project as a .tar, import one back, or delete everything">
+        <option value="" selected disabled hidden>project</option>
+        <option value="export">export project</option>
+        <option value="import">import project</option>
+        <option value="delete">delete all</option>
+      </select>
+      <select class="ghost" id="annoTypeSelect" title="Draw a rectangle (oval for Draw Circle, line for Draw Arrow, icon box for Database/Server) on the canvas, then set its color - Group Label draws a note above the box, Text Box clips a note inside, Draw Circle/Arrow/Database/Server need no text">
+        <option value="" selected disabled hidden>draw annotations</option>
+        <option value="label">group label</option>
+        <option value="box">text box</option>
+        <option value="circle">draw circle</option>
+        <option value="arrow">draw arrow</option>
+        <option value="db">database</option>
+        <option value="server">server</option>
+      </select>
+      <select class="ghost" id="rearrangeSelect" title="Re-lay-out the selected nodes (multi-select 2+ first) - Block: one tight grid sorted by color. Fibonacci: a spiral sorted by color. Neither avoids collisions.">
+        <option value="" selected disabled hidden>rearrange</option>
+        <option value="blocks">block</option>
+        <option value="fib">fibonacci</option>
+      </select>
+      <div class="dropdown ghost" id="hideColorsDropdown">
+        <button id="hideColorsToggle" type="button" title="Hide any node, annotation, or dependency using a checked color" aria-haspopup="true" aria-expanded="false">hide colors</button>
+        <div class="dropdown-panel" id="hideColorsPanel" hidden></div>
+      </div>
+      <select class="ghost" id="exportSelect" title="Export the current viewport or the dependency list">
+        <option value="" selected disabled hidden>export</option>
+        <option value="svg">export svg</option>
+        <option value="pdf">export pdf</option>
+        <option value="png">export png</option>
+        <option value="csv">export csv</option>
+      </select>
+      <button class="ghost" id="btnGridToggle" type="button" title="Show/hide the dot grid nodes snap to" aria-pressed="true">grid</button>
+      <button class="ghost" id="btnExtendedColorsToggle" type="button" title="On: pick any color via the swatch's full picker. Off: only the 8 palette swatches are selectable - doesn't change colors already in use." aria-pressed="true">extended colors</button>
+      <span class="zoom" id="zoomReadout">100%</span>
+    </div>
+    <svg id="canvas" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5"
+                markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="var(--wire)"/>
+        </marker>
+        <!-- Spacing (20) must match GRID in app.js, which drives the node
+             snap - the dots mark exactly where a dragged node will land. -->
+        <pattern id="dotGrid" patternUnits="userSpaceOnUse" width="20" height="20">
+          <circle class="grid-dot" cx="10" cy="10" r="1.4"/>
+        </pattern>
+      </defs>
+      <!-- x/y/width/height kept in sync with the viewBox in applyView() -
+           a plain large fill would otherwise run out if panned far enough. -->
+      <rect id="gGrid" fill="url(#dotGrid)"/>
+      <g id="gAnno"></g>
+      <g id="gEdges"></g>
+      <g id="gNodes"></g>
+      <g id="gIcons"></g>
+    </svg>
+  </section>
+
+  <aside class="pane side">
+    <div class="pane-head"><span class="title" id="formTitle">ADD NODE</span>
+      <button class="ghost" id="btnNew">new</button>
+      <select class="ghost" id="importCsvSelect" title="Import nodes from a CSV file (name, kind, color, notes columns) - Fibonacci arranges them in a spiral with colors grouped together, Blocks uses the default grid-per-color placement">
+        <option value="" selected disabled hidden>import csv</option>
+        <option value="fib">fibonacci</option>
+        <option value="blocks">blocks</option>
+      </select>
+    </div>
+    <div class="pane-body">
+      <label>name<input id="fName" autocomplete="off" placeholder="p-app-01"></label>
+      <label>kind<input id="fKind" autocomplete="off" placeholder="service / host / db"></label>
+      <label>color
+        <div class="swatches" id="swatches"></div>
+        <input class="color-picker" id="fColor" type="color" value="#33ff66">
+      </label>
+      <label class="inline-scale">
+        <span class="inline-scale-label">size</span>
+        <div class="scale-row">
+          <input id="fScale" type="range" min="0" max="100" step="1" value="0" disabled>
+          <input id="fScalePct" type="number" min="0" max="100" step="1" value="0" disabled>
+          <span class="unit">%</span>
+        </div>
+      </label>
+      <label>notes<textarea id="fNotes" rows="3" placeholder="what it is, who owns it"></textarea></label>
+      <div class="row">
+        <button id="btnSave">save node</button>
+        <button class="danger" id="btnDelete" disabled>delete</button>
+      </div>
+
+      <hr>
+
+      <div class="pane-head" style="border:0;padding:0;margin-bottom:8px">
+        <span class="title" id="depTitle">ADD DEPENDENCY</span>
+        <button class="ghost" id="btnNewDep">new</button>
+      </div>
+      <label>from<select id="fSrc"></select></label>
+      <label>to<select id="fDst"></select></label>
+      <div class="chips" id="pendingTargets" title="alt+click nodes on the canvas to queue extra targets"></div>
+      <label>label<input id="fLabel" autocomplete="off" placeholder="reads from / mounts / auth"></label>
+      <label>color
+        <div class="swatches" id="edgeSwatches"></div>
+        <input class="color-picker" id="fEdgeColor" type="color" value="#2fd85e">
+      </label>
+      <label class="inline-scale">
+        <span class="inline-scale-label">line scale</span>
+        <div class="scale-row">
+          <input id="fLineScale" type="range" min="0" max="100" step="1" value="0" disabled>
+          <input id="fLineScalePct" type="number" min="0" max="100" step="1" value="0" disabled>
+          <span class="unit">%</span>
+        </div>
+      </label>
+      <label class="inline-scale">
+        <span class="inline-scale-label">label scale</span>
+        <div class="scale-row">
+          <input id="fLabelScale" type="range" min="0" max="100" step="1" value="50" disabled>
+          <input id="fLabelScalePct" type="number" min="0" max="100" step="1" value="50" disabled>
+          <span class="unit">%</span>
+        </div>
+      </label>
+      <label class="check"><input id="fBidir" type="checkbox"> bidirectional (arrows on both ends)</label>
+      <div class="row">
+        <button id="btnLink">add dependency</button>
+        <button class="danger" id="btnUnlink" disabled>delete</button>
+      </div>
+
+      <hr>
+
+      <div class="pane-head" style="border:0;padding:0;margin-bottom:8px">
+        <span class="title">REMOVE NODES</span>
+        <button class="ghost danger" id="btnRemoveCsv" title="Delete nodes listed by name in a CSV file (name column required) - their dependencies go with them">remove via csv</button>
+        <input type="file" id="fRemoveCsv" accept=".csv,text/csv" style="display:none">
+      </div>
+
+      <div class="msg" id="msg"></div>
+    </div>
+  </aside>
+
+  <div class="detail-row">
+    <section class="pane detail">
+      <div class="pane-head"><span class="title">NODE DETAILS</span>
+        <span class="hint" id="detailCount"></span>
+      </div>
+      <div class="pane-body scroll" id="detailList"></div>
+    </section>
+    <div class="hint-col">
+      <aside class="pane hint">
+        <div class="pane-head"><span class="title">HINT</span></div>
+        <div class="pane-body" id="hintBox"></div>
+      </aside>
+      <aside class="pane source">
+        <div class="pane-body"><a href="https://github.com/ZINE-Quality/ephdepmap" target="_blank" rel="noopener">github.com/ZINE-Quality/ephdepmap</a></div>
+      </aside>
+    </div>
+  </div>
+
+</div>
+
+<div class="modal-overlay" id="annoDialog" hidden>
+  <div class="pane modal">
+    <div class="pane-head"><span class="title" id="annoDialogTitle">ANNOTATION</span></div>
+    <div class="pane-body">
+      <label>color
+        <div class="anno-color-row">
+          <div class="swatches" id="annoSwatches"></div>
+          <div class="arrow-head-buttons" id="fAnnoArrowRow">
+            <button type="button" id="btnAnnoArrowStart" title="Toggle an arrowhead at the start of the line">&#9664;</button>
+            <button type="button" id="btnAnnoArrowEnd" title="Toggle an arrowhead at the end of the line">&#9654;</button>
+          </div>
+        </div>
+        <input class="color-picker" id="fAnnoColor" type="color" value="#ffd23f">
+      </label>
+      <label id="fAnnoNoteRow">note<textarea id="fAnnoNote" rows="3" placeholder="what is this area"></textarea></label>
+      <label class="inline-scale" id="fAnnoFontSizeRow">
+        <span class="inline-scale-label">font size</span>
+        <div class="scale-row">
+          <input id="fAnnoFontScale" type="range" min="0" max="100" step="1" value="0">
+          <input id="fAnnoFontScalePct" type="number" min="0" max="100" step="1" value="0">
+          <span class="unit">%</span>
+        </div>
+      </label>
+      <div class="row">
+        <button id="btnAnnoSave">save annotation</button>
+        <button class="danger" id="btnAnnoDelete" hidden>delete</button>
+      </div>
+      <div class="row">
+        <button id="btnAnnoCancel">cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Project export/import/delete-all, and svg/pdf/png/csv export, now
+     live in toolbar dropdowns (pane-head) - these keep the actual
+     buttons/handlers around, just off-screen, so the selects can trigger
+     them with .click(). -->
+<div style="display:none">
+  <button id="btnExportProject">export project</button>
+  <button id="btnImportProject">import project</button>
+  <input type="file" id="fImportProject" accept=".tar,application/x-tar,.csv,text/csv" multiple>
+  <button id="btnDeleteAll">delete all</button>
+  <button id="btnExportSvg">export svg</button>
+  <button id="btnExportPdf">export pdf</button>
+  <button id="btnExportPng">export png</button>
+  <button id="btnExportCsv">export csv</button>
+  <button id="btnImportCsv" title="Import nodes from a CSV file (name, kind, color, notes columns)">import csv</button>
+  <input type="file" id="fImportCsv" accept=".csv,text/csv">
+  <button id="btnImportCsvFib" title="Import nodes from a CSV file, arranged in a fibonacci spiral with colors grouped together (name, kind, color, notes columns)">import csv as fib</button>
+  <input type="file" id="fImportCsvFib" accept=".csv,text/csv">
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
