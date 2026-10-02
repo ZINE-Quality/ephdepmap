@@ -1,0 +1,26 @@
+services:
+  app:
+    build: ./app
+    restart: unless-stopped
+    environment:
+      PORT: 3000
+    # no ports: published to the host - only reachable from other
+    # containers on this compose network (i.e. via the nginx proxy)
+    expose:
+      - "3000"
+    volumes:
+      # source bind-mounted so you can edit and just restart the container
+      - ./app:/srv/app
+      - /srv/app/node_modules
+
+  nginx:
+    build: ./nginx
+    restart: unless-stopped
+    depends_on:
+      - app
+    ports:
+      - "${HTTP_PORT:-8080}:80"
+      - "${HTTPS_PORT:-8443}:443"
+    volumes:
+      - ./nginx/certs:/etc/nginx/certs
+      - ./nginx/auth:/etc/nginx/auth

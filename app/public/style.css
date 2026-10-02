@@ -1,0 +1,574 @@
+:root{
+  --bg:#050b07;
+  --panel:#070f0a;
+  --phos:#33ff66;
+  --phos-dim:#1e6b39;
+  --phos-mid:#27a34f;
+  --wire:#2fd85e;
+  --danger:#ff5c4d;
+  --line:#123a20;
+  --font:"DejaVu Sans Mono","Consolas","Courier New",monospace;
+  --phos-rgb:51,255,102;
+  --danger-rgb:255,92,77;
+  --node-fill:rgba(5,20,10,.92);
+  --glow:0 0 4px rgba(51,255,102,.45);
+  --canvas-bg:var(--panel);
+  --field-bg:#040a06;
+}
+
+/* Flat, modern, forest-green/corporate alternative to the default CRT
+   terminal look - same layout and variable set, just re-skinned, so the
+   inline var(--wire)/var(--phos) references written per-node/per-edge in
+   app.js and index.html's marker pick it up automatically. */
+:root[data-theme="corporate"]{
+  --bg:#0e1613;
+  --panel:#141f1a;
+  --phos:#52b788;
+  --phos-dim:#2d6a4f;
+  --phos-mid:#3f8f68;
+  --wire:#40916c;
+  --danger:#e5484d;
+  --line:#22332b;
+  --font:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --phos-rgb:82,183,136;
+  --danger-rgb:229,72,77;
+  --node-fill:rgba(11,21,18,.94);
+  --glow:none;
+  --canvas-bg:#000000;
+  --field-bg:#0d1a15;
+}
+
+/* Light theme, pulled from a violet-hero/coral-accent SaaS reference: white
+   canvas and panels, deep violet standing in for the phosphor accent, coral
+   for danger states. Node boxes stay dark chips like the other themes -
+   the existing neon PALETTE swatches (app.js) are tuned for a dark chip
+   background, and would wash out with poor contrast sitting directly on
+   white. */
+:root[data-theme="light"]{
+  --bg:#f6f4fa;
+  --panel:#ffffff;
+  --phos:#4b3b78;
+  --phos-dim:#c9bfe0;
+  --phos-mid:#7c5cbf;
+  --wire:#8a6fc4;
+  --danger:#ef4f66;
+  --line:#e4dff0;
+  --font:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --phos-rgb:75,59,120;
+  --danger-rgb:239,79,102;
+  --node-fill:rgba(30,27,42,.92);
+  --glow:none;
+  --canvas-bg:#ffffff;
+  --field-bg:#ffffff;
+}
+
+/* Tangerine Light: the bg/panel/field/canvas surfaces that went soft dark
+   grey in Tangerine Dark go soft sherbet orange here instead - a pastel
+   citrus ramp rather than near-white, with burnt-orange standing in for
+   the phosphor accent (dark enough to clear text contrast, same trick
+   the plain light theme uses with its violet) and coral-pink for danger
+   states. */
+:root[data-theme="tangerine-light"]{
+  --bg:#ffd8a8;
+  --panel:#ffe4bf;
+  --phos:#b8420d;
+  --phos-dim:#f3b98c;
+  --phos-mid:#e8722f;
+  --wire:#f2711f;
+  --danger:#e0304f;
+  --line:#e8a25c;
+  --font:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --phos-rgb:184,66,13;
+  --danger-rgb:224,48,79;
+  --node-fill:rgba(38,20,12,.92);
+  --glow:none;
+  --canvas-bg:#fff0da;
+  --field-bg:#ffcf95;
+}
+
+/* Tangerine Dark: orange lives only in the pane headers now (see the
+   .pane-head override below) plus the canvas wires/handles - everywhere
+   else (bg, panel bodies, fields, the viewport itself) is a soft neutral
+   dark grey with white lettering, so the orange reads as an accent
+   instead of covering the whole shell. */
+:root[data-theme="tangerine-dark"]{
+  --bg:#262629;
+  --panel:#2f2f34;
+  --phos:#ffffff;
+  --phos-dim:#f5c9a0;
+  --phos-mid:#ffb27a;
+  --wire:#ff8a3d;
+  --danger:#ff5c66;
+  --line:#45454b;
+  --font:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --phos-rgb:255,255,255;
+  --danger-rgb:255,92,102;
+  --node-fill:rgba(24,24,27,.92);
+  --glow:none;
+  --canvas-bg:#1a1a1c;
+  --field-bg:#1e1e21;
+}
+/* .pane-head's default rule only tints whatever --panel shows through
+   (rgba(--phos-rgb,.05) over it) - pin it to a solid bright orange here
+   so headers stay the one clearly-orange element in the theme. */
+:root[data-theme="tangerine-dark"] .pane-head{background:#e2611c}
+:root[data-theme="tangerine-dark"] .pane-head button.danger:hover:not(:disabled){
+  background:rgba(58,9,6,.38);
+}
+
+/* Plotter theme: pure black-on-white, like pen-on-paper output. The
+   variables below cover everything driven by CSS vars, but node/edge/
+   annotation colors are stored per-record and written as explicit SVG
+   presentation attributes in app.js's draw() (so a custom color normally
+   wins over any CSS var) - the override block further down pins those
+   back to black regardless of what color was declared. */
+:root[data-theme="plotter"]{
+  --bg:#ffffff;
+  --panel:#ffffff;
+  --phos:#000000;
+  --phos-dim:#666666;
+  --phos-mid:#333333;
+  --wire:#000000;
+  --danger:#000000;
+  --line:#000000;
+  --font:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --phos-rgb:0,0,0;
+  --danger-rgb:0,0,0;
+  --node-fill:#ffffff;
+  --glow:none;
+  --canvas-bg:#ffffff;
+  --field-bg:#ffffff;
+}
+/* A plain CSS class rule always beats a presentation attribute (see the
+   comment on .edge .edge-line below), so these need no !important - they
+   just need to out-specificity the per-record stroke/fill attribute. */
+:root[data-theme="plotter"] .node text,
+:root[data-theme="plotter"] .edge text,
+:root[data-theme="plotter"] .anno-label{fill:#000}
+:root[data-theme="plotter"] .node rect,
+:root[data-theme="plotter"] .edge .edge-line{stroke:#000}
+/* No fill for any annotation kind in plotter - a plotter draws outlines,
+   not filled shapes, and an opaque fill would blot out whatever's under it
+   in the plotted/exported output. */
+:root[data-theme="plotter"] .anno-box{stroke:#000;fill:none}
+:root[data-theme="plotter"] marker path{fill:#000}
+:root[data-theme="plotter"] .msel-ring{stroke:#000}
+:root[data-theme="plotter"] .marquee{fill:rgba(0,0,0,.08);stroke:#000}
+/* Database/Server icons are baked-in colored SVG (data: URI, not styleable
+   by the host page's CSS) - brightness(0) stamps every visible (non-
+   transparent) pixel to pure black regardless of its original color,
+   without needing to know the current theme in JS or re-render on switch. */
+:root[data-theme="plotter"] .anno-icon{filter:brightness(0)}
+
+/* Both non-default themes drop the CRT scanline overlay and the per-node
+   neon glow - they're deliberately flat, the retro theme is deliberately not. */
+[data-theme]:not([data-theme=""]) .crt{display:none}
+[data-theme]:not([data-theme=""]) .node rect{filter:none!important}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{
+  background:var(--bg);color:var(--phos);
+  font:13px/1.45 var(--font);
+  overflow:hidden;
+  text-shadow:var(--glow);
+}
+
+/* CRT overlay: scanlines + vignette. Non-interactive. */
+.crt{
+  position:fixed;inset:0;z-index:100;pointer-events:none;
+  background:
+    repeating-linear-gradient(to bottom,rgba(0,0,0,.28) 0 1px,transparent 1px 3px),
+    radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.55) 100%);
+}
+@media (prefers-reduced-motion:no-preference){
+  .crt::after{
+    content:"";position:absolute;inset:0;
+    background:linear-gradient(rgba(var(--phos-rgb),.05),transparent 40%);
+    animation:sweep 7s linear infinite;
+  }
+}
+@keyframes sweep{from{transform:translateY(-100%)}to{transform:translateY(100%)}}
+
+.shell{
+  display:grid;height:100%;
+  grid-template-columns:1fr 330px;
+  grid-template-rows:1fr 210px;
+  grid-template-areas:"view side" "detail side";
+  gap:6px;padding:6px;
+}
+.view{grid-area:view}
+.side{grid-area:side}
+/* Bottom row is now two panes side by side instead of node details alone -
+   flex (not grid) since it's the only row that needs sub-columns of its
+   own, independent of the .shell grid's view/side column widths above it.
+   3:1 gives the hint box exactly a quarter of the row's width. */
+.detail-row{grid-area:detail;display:flex;flex-wrap:nowrap;gap:6px;min-width:0;min-height:0}
+.detail-row>.detail{flex:3;min-width:0}
+/* Hint box stacked over a fixed-height source-link box - the hint takes
+   whatever height the link box doesn't. */
+.detail-row>.hint-col{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}
+.hint-col>.hint{flex:1}
+.source a{color:var(--phos-mid);font-size:11px;letter-spacing:.08em;word-break:break-all}
+.source a:hover{color:var(--phos)}
+
+.pane{
+  border:1px solid var(--line);background:var(--panel);
+  display:flex;flex-direction:column;min-height:0;min-width:0;
+  box-shadow:inset 0 0 40px rgba(var(--phos-rgb),.04);
+}
+
+/* --- annotation color/note dialog --- */
+.modal-overlay{
+  position:fixed;inset:0;z-index:200;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(0,0,0,.5);
+}
+.modal-overlay[hidden]{display:none}
+.modal{width:min(320px,90vw)}
+.pane-head{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  padding:5px 9px;border-bottom:1px solid var(--line);
+  background:rgba(var(--phos-rgb),.05);white-space:nowrap;
+  /* No wrap meant a too-narrow window let toolbar content spill straight
+     past .view's right edge with overflow:visible - which happens to be
+     exactly where .side's "ADD NODE" header sits in the grid next door, so
+     it looked like a control had drifted into the sidebar. flex-wrap moves
+     overflow onto a second row within pane-head instead - NOT
+     overflow:auto/hidden, which would also work for the horizontal case
+     but silently clips any absolutely-positioned popup that renders below
+     the toolbar (the "hide colors" panel), since forcing overflow-x
+     non-visible forces overflow-y non-visible too. */
+}
+.pane-head>*{flex-shrink:0}
+.title,.hint,.zoom{letter-spacing:.16em;font-weight:700;font-size:11px}
+.brand-mark{flex:none}
+.hint{overflow:hidden;text-overflow:ellipsis}
+.zoom{margin-left:auto}
+.pane-body{padding:9px;overflow:auto;min-height:0}
+.scroll{overflow-y:auto}
+/* Dynamic context tip (see updateHint() in app.js) - a bit more breathing
+   room than the default pane-body padding since it's just one short line
+   of prose, not a dense list. */
+#hintBox{color:var(--phos-mid);line-height:1.5}
+
+/* --- canvas --- */
+#canvas{flex:1;width:100%;display:block;cursor:grab;touch-action:none;background:var(--canvas-bg)}
+#canvas.panning{cursor:grabbing}
+#canvas.dragging{cursor:move}
+#canvas.marqueeing{cursor:crosshair}
+#canvas.annotating{cursor:crosshair}
+/* Moleskine-style dot grid, the ground plane nodes snap to (see GRID in
+   app.js) - subtle at every zoom level, same phos-tinted-neutral language
+   as the rest of the canvas's UI chrome (.msel-ring, .marquee, etc). */
+.grid-dot{fill:rgba(var(--phos-rgb),.35)}
+#gGrid{pointer-events:none}
+.marquee{fill:rgba(255,210,63,.12);stroke:#ffd23f;stroke-width:1;stroke-dasharray:4 3;pointer-events:none}
+
+/* --- annotations: freeform rectangle + note on the canvas --- */
+/* Clickable on its stroke only (unlike .anno-draft below, the live drag
+   preview, which stays inert) - pointer-events:stroke so the outline opens
+   the edit dialog too, not just its label text, but the fill/interior
+   stays passive. The dashes make the visible stroke itself an unreliable
+   hit target on their own (dead zones in every gap), so .anno-hit below
+   is the real click target, same as .edge-hit is for edges. */
+.anno-box{stroke-width:5;stroke-dasharray:16 10;cursor:pointer;pointer-events:stroke}
+/* Fat, invisible, and solid (no dashes, so no dead zones) - the actual
+   hit-testing shape, drawn matching the visible box/ellipse's geometry.
+   Still pointer-events:stroke, so it's the outline that's easier to hit,
+   not the interior. Lights up on hover like .edge-hit/.handle do. */
+.anno-hit{fill:none;stroke:transparent;stroke-width:18;pointer-events:stroke;cursor:pointer}
+.anno-hit:hover{stroke:rgba(var(--phos-rgb),.18)}
+.anno-draft{fill:rgba(var(--phos-rgb),.10);stroke:var(--phos);stroke-width:5;stroke-dasharray:16 10;pointer-events:none}
+/* Database/Server: no dashed outline, so unlike .anno-hit above the whole
+   box is the click target, not just a band near its (invisible) edge. */
+.anno-icon-hit{fill:transparent;pointer-events:all;cursor:pointer}
+.anno-icon-hit:hover{fill:rgba(var(--phos-rgb),.1)}
+/* The icon itself, drawn on top - inert so clicks fall through to
+   .anno-icon-hit beneath it. */
+.anno-icon{pointer-events:none}
+/* Grab handle zone, every annotation kind - the actual interactive target
+   (hover + mousedown-to-drag), reaching from just inside the box's corner
+   out past the handle. Always live (not gated on :hover, unlike the visual
+   handle below) since something has to be hoverable first to trigger that
+   reveal - without this reach, a circle's ellipse curve never comes near
+   its bounding box's corner and the handle could never be discovered by
+   hovering near the annotation at all. */
+.anno-handle-zone{fill:transparent;pointer-events:all;cursor:move}
+.anno-handle-zone:hover{fill:rgba(var(--phos-rgb),.12)}
+/* The handle itself is purely visual (pointer-events:none, always - the
+   zone above is what's actually clickable) - hollow (unlike a node's solid
+   .move-handle) so it doesn't compete visually with a colorized icon or a
+   tinted box, and offset outside the box's corner so it never sits on top
+   of the box/ellipse's own outline, which used to make the handle and the
+   edit-click hit band compete pixel-for-pixel for the same stroke.
+   Hidden until its zone (or, for database/server, the icon's own full-box
+   .anno-icon-hit) is hovered - .anno:hover covers both since hover bubbles
+   up to the group from whichever child the pointer actually landed on. Not
+   display:none/visibility:hidden: those would also suppress .dragging
+   below from keeping it visible once a drag is already in progress. */
+.anno-move-handle{fill:none;stroke:var(--phos);stroke-width:1.5;pointer-events:none;opacity:0;transition:opacity .12s}
+/* .dragging (set in draw() while this annotation is the target of an
+   in-progress annoDrag) keeps the handle visible even if a fast drag
+   momentarily outruns hover, same idea as the :hover case above. */
+.anno:hover .anno-move-handle, .anno.dragging .anno-move-handle{opacity:1}
+.anno-move-handle:hover{fill:rgba(var(--phos-rgb),.25)}
+/* --anno-font-scale (Text Box's font-size slider only - see draw()) is set
+   as an inline custom property directly on that one <text>, not inherited
+   from anywhere - every other .anno-label (Group Label captions, etc.)
+   never sets it, so var(...,1) leaves them at the original fixed size. A
+   plain font-size attribute wouldn't have worked here regardless: a class
+   rule like this one always beats a presentation attribute on specificity,
+   same reason edges use --line-scale/--label-scale instead of one. */
+.anno-label{
+  font-family:var(--font);font-size:calc(12px * var(--anno-font-scale, 1));font-weight:700;
+  paint-order:stroke;stroke:var(--panel);stroke-width:calc(5px * var(--anno-font-scale, 1));stroke-linejoin:round;
+  cursor:pointer;
+}
+
+.node rect{
+  fill:var(--node-fill);stroke-width:1.5;
+  filter:drop-shadow(0 0 6px rgba(var(--phos-rgb),.25));
+}
+/* Node style toggle (see nodeStyleSelect/nodeStyle in app.js) - rx/ry is
+   set as a plain attribute in draw() itself, not a CSS rule here. CSS-level
+   rx/ry is an SVG2 geometry property that Firefox doesn't implement, so a
+   stylesheet-only :root[data-node-style="rounded"] rule left nodes square
+   there regardless of the setting; an attribute works in every engine and
+   also survives straight through into an exported SVG's clone for free. */
+.node.sel rect{stroke-width:3;stroke-dasharray:6 3}
+.msel-ring{fill:none;stroke:#ffd23f;stroke-width:2;stroke-dasharray:5 3;pointer-events:none}
+.node text{font-family:var(--font);pointer-events:none;user-select:none}
+.node .nm{font-size:15px;font-weight:700}
+.node .kd{font-size:11px;font-weight:600}
+.node{cursor:pointer}
+/* Resize buttons - only drawn (see draw()) while the node is selected, one
+   on each side of its box. Sibling to the scaled inner <g>, not a child of
+   it, so they stay a fixed on-screen size instead of growing with the node. */
+.size-btn{fill:var(--field-bg);stroke:var(--phos);stroke-width:1.5;cursor:pointer}
+.size-btn:hover{fill:rgba(var(--phos-rgb),.3)}
+.size-btn-label{
+  font-family:var(--font);font-size:14px;font-weight:700;fill:var(--phos);
+  pointer-events:none;user-select:none;
+}
+/* Move handle - solid white square at the top-right corner of a selected
+   node's box. Grabbing it drags the node without needing shift+click. */
+.move-handle{fill:#fff;stroke:var(--phos);stroke-width:1.5;cursor:move}
+.move-handle:hover{fill:rgba(var(--phos-rgb),.3)}
+
+/* stroke/fill are NOT set here - they're written per-edge as presentation
+   attributes in app.js (draw()) so a custom edge color always wins. A CSS
+   class rule would always beat that attribute regardless of specificity. */
+/* --line-scale/--label-scale are set as inline custom properties on the
+   .edge <g> in draw() (per-edge, default 1) - referencing them via calc()
+   here instead of setting stroke-width/font-size as JS-computed
+   attributes means the hot/sel overrides below still apply on top
+   automatically, the same as they did before per-edge scale existed. */
+.edge .edge-line{fill:none;stroke-width:calc(1.6px * var(--line-scale, 1));cursor:pointer}
+.edge.hot .edge-line{stroke:var(--phos);stroke-width:calc(2.6px * var(--line-scale, 1))}
+.edge.sel .edge-line{stroke-width:calc(2.6px * var(--line-scale, 1));stroke-dasharray:8 4}
+/* Fat invisible stroke, drawn under the real line, that does the actual
+   hit-testing - so you don't have to land the pointer on the hairline
+   itself. Lights up green on hover, same as .handle/.anchor-handle.
+   Deliberately not scaled by --line-scale - stays a generous, consistent
+   click target even when the visible line's scaled down thin. */
+.edge-hit{fill:none;stroke:transparent;stroke-width:18;pointer-events:stroke;cursor:pointer}
+.edge-hit:hover{stroke:rgba(var(--phos-rgb),.18)}
+.edge text{
+  font-family:var(--font);font-size:calc(11px * var(--label-scale, 1));font-weight:600;
+  paint-order:stroke;stroke:var(--panel);stroke-width:calc(4px * var(--label-scale, 1));stroke-linejoin:round;
+  pointer-events:none;user-select:none;
+}
+.handle-arm{stroke:var(--phos-mid);stroke-width:1;stroke-dasharray:3 3;pointer-events:none}
+.handle-dot{fill:var(--panel);stroke:var(--phos);stroke-width:2;pointer-events:none}
+.handle{fill:transparent;pointer-events:all;cursor:grab}
+.handle:hover{fill:rgba(var(--phos-rgb),.18)}
+/* Anchor handles (where an edge touches a node's box) - dashed ring
+   instead of the curve handles' solid one, so the two read as distinct
+   even when they land on top of each other (a straight, unbent edge). */
+.anchor-dot{fill:var(--panel);stroke:var(--phos);stroke-width:2;stroke-dasharray:2 2;pointer-events:none}
+.anchor-handle{fill:transparent;pointer-events:all;cursor:grab}
+.anchor-handle:hover{fill:rgba(var(--phos-rgb),.18)}
+
+/* --- forms --- */
+label{display:block;margin:0 0 8px}
+/* label{display:block} above is an author rule, so it beats the browser's
+   own (much lower-priority) [hidden]{display:none} default - without this,
+   setting .hidden=true in JS on a <label> (e.g. the annotation dialog's
+   note row for Circle) silently does nothing. */
+label[hidden]{display:none}
+input,select,textarea,button{
+  font:inherit;color:var(--phos);background:var(--field-bg);
+  border:1px solid var(--line);border-radius:0;padding:5px 7px;width:100%;
+}
+input:focus,select:focus,textarea:focus,button:focus-visible{
+  outline:1px solid var(--phos);outline-offset:1px;
+}
+input:disabled,select:disabled,textarea:disabled{opacity:.35;cursor:not-allowed}
+textarea{resize:vertical}
+input[type=color]{padding:1px;height:26px;cursor:pointer}
+/* Extended colors off (see btnExtendedColorsToggle in app.js) - hides the
+   native color input beside each swatch row, so the browser's full
+   spectrum/slider picker can't be opened at all and the 8 PALETTE swatches
+   are the only way left to set a color. Doesn't touch colors already in
+   use anywhere (nodes/edges/annotations keep whatever they were set to),
+   only what's pickable going forward. */
+:root[data-extended-colors="off"] .color-picker{display:none}
+label.check{display:flex;align-items:center;gap:7px}
+label.check input{width:auto;padding:0}
+.scale-row{display:flex;align-items:center;gap:8px}
+.scale-row input[type=range]{flex:1;width:auto;padding:0;border:0;background:transparent}
+.scale-row input[type=number]{width:52px;flex:none;text-align:right;padding:5px 5px}
+.scale-row .unit{font-size:11px;color:var(--phos-mid)}
+/* line scale / label scale: the label text sits on the same line as the
+   slider instead of stacked above it, trading slider width for a shorter
+   form. No fixed label width - themes swap between monospace and
+   sans-serif fonts with different character widths, so sizing to content
+   avoids wrapping/clipping in any of them (at the cost of the two rows'
+   sliders not lining up pixel-for-pixel with each other). */
+.inline-scale{display:flex;align-items:center;gap:8px}
+.inline-scale-label{flex:none;white-space:nowrap}
+.inline-scale .scale-row{flex:1;min-width:0}
+button{cursor:pointer;background:rgba(var(--phos-rgb),.09);letter-spacing:.08em}
+button:hover:not(:disabled){background:rgba(var(--phos-rgb),.2)}
+button:disabled{opacity:.35;cursor:not-allowed}
+/* border/hover keyed off --danger (not a hardcoded hex) so the outline
+   stays visible against every theme's --field-bg/pane-head background - a
+   fixed dark brownish-red border read as barely-there on the darker themes
+   (retro, forest) and got lost entirely against tangerine-dark's solid
+   orange pane-head, leaving a small .ghost-sized button like "remove via
+   csv" looking like plain text instead of a button. */
+button.danger{color:var(--danger);border-color:var(--danger);background:rgba(var(--danger-rgb),.18)}
+button.danger:hover:not(:disabled){background:rgba(var(--danger-rgb),.32)}
+button[aria-pressed="true"]{background:rgba(var(--phos-rgb),.3)}
+/* "remove via csv" - explicit per-theme look, requested by name, so these
+   override the general button.danger rule above just for this one button
+   (an #id always outranks button.danger's class+type selector, regardless
+   of source order). Untouched themes (light, tangerine-light, plotter)
+   fall through to that general rule. */
+/* Retro - data-theme="" (not simply absent - see the inline script in
+   index.html) is what the theme picker actually sets for it. Solid bright
+   phosphor green with black text, unmistakably a button against the CRT
+   theme's near-black chrome. */
+:root[data-theme=""] #btnRemoveCsv{color:#000;background:var(--phos);border-color:var(--phos)}
+:root[data-theme=""] #btnRemoveCsv:hover:not(:disabled){background:var(--phos-mid)}
+/* Forest - identical to #btnLink ("add dependency"), a plain button with
+   no danger tint at all. */
+:root[data-theme="corporate"] #btnRemoveCsv{color:var(--phos);background:rgba(var(--phos-rgb),.09);border-color:var(--line)}
+:root[data-theme="corporate"] #btnRemoveCsv:hover:not(:disabled){background:rgba(var(--phos-rgb),.2)}
+/* Tangerine Dark - solid, properly red (not --danger's light pink-red)
+   fill with white text and a white stroke, so it doesn't just melt into
+   the pane-head's own orange the way an all-red button would. */
+:root[data-theme="tangerine-dark"] #btnRemoveCsv{color:#fff;background:#c81e2c;border-color:#fff}
+:root[data-theme="tangerine-dark"] #btnRemoveCsv:hover:not(:disabled){background:#e0222f}
+.ghost{width:auto;margin-left:auto;padding:2px 8px;font-size:11px}
+select.ghost{cursor:pointer}
+.pane-head .ghost+.ghost{margin-left:0}
+/* "hide colors" - a checkbox-list dropdown, which a native <select> can't
+   host, so it's a plain positioned div instead. The wrapper itself carries
+   .ghost (so it sizes/sits in the toolbar row exactly like the button/
+   select controls beside it) plus the border/background .ghost normally
+   inherits from the shared input/select/textarea/button rule - a bare div
+   isn't covered by that tag list, so it needs its own copy to actually
+   look like the select/button controls it sits next to, not plain text.
+   The toggle button inside is unstyled so it just reads as that pill's
+   label, with a small arrow appended to match a native <select>'s. */
+.dropdown{
+  position:relative;cursor:pointer;
+  background:var(--field-bg);border:1px solid var(--line);
+}
+.dropdown:hover{background:rgba(var(--phos-rgb),.2)}
+.dropdown>button{
+  all:unset;display:flex;align-items:center;gap:5px;width:100%;cursor:pointer;
+  font:inherit;color:inherit;letter-spacing:inherit;
+}
+.dropdown>button::after{content:"▾";font-size:9px;margin-left:auto;opacity:.7}
+.dropdown-panel{
+  position:absolute;top:100%;left:0;margin-top:4px;z-index:150;
+  background:var(--panel);border:1px solid var(--line);
+  padding:5px;display:flex;flex-direction:column;gap:1px;
+  box-shadow:0 4px 16px rgba(0,0,0,.35);white-space:nowrap;
+}
+.dropdown-panel[hidden]{display:none}
+.color-hide-row{
+  display:flex;align-items:center;gap:7px;font-size:11px;
+  cursor:pointer;padding:3px 5px;letter-spacing:normal;
+}
+.color-hide-row:hover{background:rgba(var(--phos-rgb),.08)}
+.color-hide-row input{width:auto;padding:0;flex:none;margin:0}
+.color-hide-row i{width:14px;height:14px;border:1px solid var(--line);flex:none;display:block}
+.row{display:flex;gap:6px;margin-bottom:8px}
+hr{border:0;border-top:1px dashed var(--line);margin:12px 0}
+hr.tight{margin:4px 0}
+.msg{min-height:0;font-size:11px;color:var(--danger)}
+.msg.ok{color:var(--phos)}
+
+.swatches{display:flex;gap:4px;margin:3px 0}
+.swatches i{width:20px;height:18px;border:1px solid var(--line);cursor:pointer;display:block;position:relative}
+.swatches i:hover{outline:1px solid var(--phos)}
+/* Marks whichever swatch matches the color input's current value (see
+   syncSwatchSelection in app.js) - a white X with a black outline (faked
+   via stacked text-shadows, no SVG/stroke available on plain text) so it
+   stays legible against any of the 8 PALETTE colors, light or dark. */
+.swatches i.selected::after{
+  content:"✕";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;line-height:1;color:#fff;
+  text-shadow:-1px -1px 0 #000,1px -1px 0 #000,-1px 1px 0 #000,1px 1px 0 #000;
+  pointer-events:none;
+}
+/* Annotation dialog's color row (Arrow only shows the two arrow-head
+   toggles - fAnnoArrowRow stays hidden for every other kind) - swatches on
+   the left, the two toggles pushed to the right edge of the same row. */
+.anno-color-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.arrow-head-buttons{display:flex;gap:4px;flex:none}
+.arrow-head-buttons button{width:auto;padding:6px 16px;font-size:14px}
+
+/* --- pending dependency targets (alt+click queue) --- */
+.chips{display:flex;flex-wrap:wrap;gap:5px;margin:-3px 0 10px}
+.chips:empty{margin:0}
+.chip{
+  display:inline-flex;align-items:center;gap:3px;
+  border:1px solid var(--line);background:rgba(var(--phos-rgb),.07);
+  padding:1px 3px 1px 7px;font-size:11px;
+}
+.chip button{
+  width:auto;padding:0 4px;font-size:12px;line-height:1.4;
+  border:0;background:transparent;color:var(--danger);
+}
+
+/* --- detail list --- */
+.drow{
+  border-bottom:1px dashed var(--line);padding:5px 4px;cursor:pointer;
+  display:grid;grid-template-columns:10px 1fr 130px 60px;gap:8px;align-items:baseline;
+}
+.drow:hover{background:rgba(var(--phos-rgb),.07)}
+.drow.sel{background:rgba(var(--phos-rgb),.13)}
+.drow b{font-weight:700}
+.drow .k{color:var(--phos)}
+.drow .c{width:9px;height:9px;align-self:center}
+.deps{padding:2px 0 8px 30px;font-size:11.5px;color:var(--phos)}
+.deps div{display:flex;gap:6px;align-items:center;padding:1px 0}
+.deps b{color:var(--phos)}
+.deps button{width:auto;padding:0 5px;font-size:10px}
+.empty{color:var(--phos);padding:14px 4px}
+
+/* --- controls reference page (controls.html) --- */
+body.controls-page{overflow:auto;display:flex;justify-content:center;padding:24px 16px}
+.controls-page .pane{width:min(680px,100%);align-self:flex-start}
+.ctrl-table{width:100%;border-collapse:collapse;font-size:12px}
+.ctrl-table th{
+  text-align:left;padding:12px 4px 4px;color:var(--phos);
+  font-size:11px;letter-spacing:.14em;border-bottom:1px solid var(--line);
+}
+.ctrl-table td{padding:4px;border-bottom:1px dashed var(--line);vertical-align:top}
+.ctrl-table td:first-child{white-space:nowrap;font-weight:700;padding-right:14px}
+
+/* --- PDF export: print just the current viewport --- */
+.print-root{display:none}
+@media print{
+  body>*:not(.print-root){display:none!important}
+  .print-root{
+    display:block!important;position:fixed;inset:0;background:var(--canvas-bg);
+    -webkit-print-color-adjust:exact;print-color-adjust:exact;
+  }
+  .print-root svg{width:100%;height:100%}
+}
