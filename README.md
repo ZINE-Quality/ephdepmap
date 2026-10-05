@@ -1,6 +1,6 @@
 # ephdepmap
 
-Fork of [depmap](../depmap) with no server-side database. Same flat 2D
+Fork of depmap with no server-side database. Same flat 2D
 dependency map, same green-screen aesthetic, but every node, dependency,
 and annotation lives in the browser's own `localStorage` instead of a
 MariaDB container - the app container just serves static files. Still
